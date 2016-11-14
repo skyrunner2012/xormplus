@@ -263,15 +263,14 @@ func addSqlTemplate(sqlTemplate *SqlTemplate) error {
 func lineToDot(s string) string {
     return strings.Replace(s, "_", ".", -1)
 }
-func baseNameWithOutExt(fullPath string) string {
-    baseNameWithExt := path.Base(fullPath)
+func baseNameWithOutExt(baseNameWithExt string) string {
     fileExt := path.Ext(baseNameWithExt)
     baseNameWithoutExt := strings.TrimSuffix(baseNameWithExt, fileExt)
     return baseNameWithoutExt
 }
 
 func (sqlTemplate *SqlTemplate) paresSqlTemplate(filename string, filepath string) error {
-    baseNameDot = lineToDot(baseNameWithOutExt(filepath))
+    baseNameDot = lineToDot(baseNameWithOutExt(filename))
     err := readLine(filepath, sqlTemplate, processStplFileLine)
     if err != nil {
         return err
