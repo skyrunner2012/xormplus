@@ -12,6 +12,7 @@ import (
     "regexp"
     "fmt"
     "bytes"
+    "path"
 )
 
 type SqlTemplate struct {
@@ -232,6 +233,7 @@ func init() {
 
 var pkgName = ""
 var pkgContent bytes.Buffer
+var baseNameDot = ""
 
 func processStplFileLine(line string, sqlTemplate *SqlTemplate) {
     if emptyLineRegexp.MatchString(line) {
@@ -253,13 +255,21 @@ func addSqlTemplate(sqlTemplate *SqlTemplate) error {
         }
 
         sqlTemplate.checkNilAndInit()
-        sqlTemplate.Template[pkgName] = template
+        sqlTemplate.Template[fmt.Sprintf("%s.%s", baseNameDot, pkgName)] = template
     }
     pkgContent.Reset()
     return nil
 }
 
+func baseNameWithOutExt(fullPath string) string {
+    baseNameWithExt := path.Base(fullPath)
+    fileExt := path.Ext(baseNameWithExt)
+    baseNameWithoutExt := strings.TrimSuffix(baseNameWithExt, fileExt)
+    return baseNameWithoutExt
+}
+
 func (sqlTemplate *SqlTemplate) paresSqlTemplate(filename string, filepath string) error {
+    baseNameDot = baseNameWithOutExt(filepath)
     err := readLine(filepath, sqlTemplate, processStplFileLine)
     if err != nil {
         return err
