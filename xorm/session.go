@@ -3268,7 +3268,11 @@ func (session *Session) innerInsert(bean interface{}) (int64, error) {
 			return 1, nil
 		}
 
-		aiValue.Set(int64ToIntValue(id, aiValue.Type()))
+		if aiValue.Type().String() == "string" {
+			aiValue.Set(reflect.ValueOf(fmt.Sprintf("%d", id)))
+		} else {
+			aiValue.Set(int64ToIntValue(id, aiValue.Type()))
+		}
 
 		return 1, nil
 	} else if session.Engine.dialect.DBType() == core.POSTGRES && len(table.AutoIncrement) > 0 {
